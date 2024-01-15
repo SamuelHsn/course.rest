@@ -1,4 +1,4 @@
-const { v1: uuidv1 } = require("uuid");
+const { v1 } = require("uuid");
 const fileUpload = require("express-fileupload");
 const path = require("path");
 
@@ -12,22 +12,22 @@ class Files {
         return request.status(400).send("No files were uploaded.");
       }
       let file = request.files.image;
-      let id = uuidV1();
+      let id = v1();
       var filename = id + "_" + file.name;
       let filePath = path.join(__dirname, "/uploads", filename);
-      file.mv(filePath, function(err) {
+      file.mv(filePath, function (err) {
         if (err) {
           return response.status(500).send(err);
         }
         response.setHeader("Location", `/api/files/${filename}`);
         response.json({
           id: id,
-          filename: filename
+          filename: filename,
         });
       });
     });
 
-    app.get("/api/files/:filename", function(request, response) {
+    app.get("/api/files/:filename", function (request, response) {
       let filename = request.params.filename;
       response.sendFile(path.join(__dirname, "/uploads", filename));
     });
