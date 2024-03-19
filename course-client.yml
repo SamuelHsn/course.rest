@@ -1,0 +1,13 @@
+ApiVersion: 1
+Kind: Pod
+Metadata:
+  Name: course-client
+  Labels:
+    app: course-client
+    version: v1
+Spec:
+  Containers:
+    - Name: course-client
+      Image: course-client:1.0.0
+      Ports:
+        - ContainerPort: 3000
