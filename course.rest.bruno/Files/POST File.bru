@@ -1,0 +1,19 @@
+meta {
+  name: POST File
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8081/api/files
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  image: @file(C:\Users\A872KL\Pictures\Sinistre.png)
+}

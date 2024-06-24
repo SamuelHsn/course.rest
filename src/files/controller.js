@@ -11,10 +11,13 @@ class Files {
       if (!request.files) {
         return request.status(400).send("No files were uploaded.");
       }
+
       let file = request.files.image;
+
       let id = v1();
       var filename = id + "_" + file.name;
       let filePath = path.join(__dirname, "/uploads", filename);
+      console.log(file);
       file.mv(filePath, function (err) {
         if (err) {
           return response.status(500).send(err);

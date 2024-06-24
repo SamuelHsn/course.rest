@@ -11,7 +11,11 @@ class App {
         extended: true,
       })
     );
-    app.use(bodyParser.json());
+    app.use(
+      bodyParser.json({
+        type: ["application/json", "application/json-patch+json"],
+      })
+    );
 
     var middlewareHttp = function (request, response, next) {
       response.setHeader("Api-version", packageJson.version);

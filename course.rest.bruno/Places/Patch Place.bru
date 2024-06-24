@@ -1,0 +1,30 @@
+meta {
+  name: Patch Place
+  type: http
+  seq: 1
+}
+
+patch {
+  url: http://localhost:8081/api/places/2
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json-patch+json
+}
+
+body:json {
+  [
+    {
+      "op": "replace",
+      "path": "/name",
+      "value": "New York545"
+    },
+    {
+      "op": "replace",
+      "path": "/author",
+      "value": "John"
+    }
+  ]
+}

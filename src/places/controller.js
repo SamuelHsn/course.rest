@@ -1,5 +1,6 @@
 const { request } = require("express");
 const { validate } = require("jsonschema");
+var jsonpatch = require("fast-json-patch");
 var { expressjwt: jwt } = require("express-jwt");
 var placeSchema = {
   id: "/Place",
@@ -9,17 +10,17 @@ var placeSchema = {
       type: "string",
       minLength: 3,
       maxLength: 100,
-      pattern: "^[a-zA-Z-]*$",
+      pattern: "^[a-zA-Z- ]*$",
     },
     author: {
       type: "string",
       minLength: 3,
       maxLength: 100,
-      pattern: "^[a-zA-Z-]*$",
+      pattern: "^[a-zA-Z- ]*$",
     },
     review: { type: "integer", minimum: 1, maximum: 9 },
     image: {
-      type: "object",
+      type: ["object", "null"],
       properties: {
         url: { type: "string", pattern: "(http|https):?://.*" },
         title: { type: "string", minLenght: 3, maxLenght: 100 },
@@ -73,6 +74,34 @@ class Places {
         response.status(201).json(place);
       }
     );
+
+    app.patch("/api/places/:id", async (request, response) => {
+      if (request.headers["content-type"] !== "application/json-patch+json") {
+        response.status(400).json({ key: "content.type.invalid" });
+        return;
+      }
+
+      let id = request.params.id;
+      let patch = request.body;
+      let place = await data.getPlaceAsync(id);
+
+      if (place === undefined) {
+        return response.status(404).json({ key: "entity.not.found" });
+      }
+
+      const result = jsonpatch.applyPatch(place, patch, true);
+      const validateResult = validate(result.newDocument, placeSchema);
+      if (!validateResult.valid) {
+        response.status(400).json({
+          key: "entity.validation.error",
+          errors: validateResult.errors,
+        });
+        return;
+      }
+      await data.savePlaceAsync(result);
+      response.set("Content-Type", "application/json");
+      response.status(200).json(result.newDocument);
+    });
 
     app.get("/api/places", async (request, response) => {
       let id = request.params.id;
